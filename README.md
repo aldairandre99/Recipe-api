@@ -23,6 +23,15 @@ Api Development mode
   npm run start:dev
 ```
 
+# Features
+
+- [x] Recipe Crud
+- [x] User Crud
+- [ ] Authentication and Authorization
+- [ ] Cooks
+- [ ] Core
+
+
 # Resources
 
 [How to Build a CRUD REST API with NestJS, Docker, Swagger, and Prisma](https://www.freecodecamp.org/news/build-a-crud-rest-api-with-nestjs-docker-swagger-prisma/)
