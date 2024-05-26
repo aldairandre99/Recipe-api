@@ -27,16 +27,16 @@ export class AuthController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @Patch("edit/user/:id")
-  async editUser(@Body() userDto: EditeUserDto, @Param("id") id: number) {
-    const { email } = userDto
-    return await this.authService.editUser(email, +id)
+  @Patch("edit/user")
+  async editUser(@Body() userDto: EditeUserDto) {
+    const { email, password, newEmail } = userDto
+    return await this.authService.editUser(email, password, newEmail)
   }
 
   @HttpCode(HttpStatus.OK)
   @Delete("delete/user")
   async deleteUser(@Body() userDto: DeleteUserDto) {
-    const { email } = userDto
-    return await this.authService.removeUser(email)
+    const { email, password } = userDto
+    return await this.authService.removeUser(email, password)
   }
 }

@@ -12,4 +12,8 @@ export class DeleteUserDto {
   })
   @IsNotEmpty()
   email: string
+
+  @IsString()
+  @IsNotEmpty()
+  password: string
 }

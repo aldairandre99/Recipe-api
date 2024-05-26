@@ -1,5 +1,6 @@
-import { ConflictException, HttpStatus, Injectable } from '@nestjs/common';
+import { ConflictException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class UsersService {
@@ -24,26 +25,34 @@ export class UsersService {
     })
   }
 
-  async edit(email: string, id: number) {
-    const emailValidator = await this.prisma.user.findUnique({ where: { id } })
+  async edit(email: string, pass: string, newEmail: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } })
 
-    if (!emailValidator) {
+    const matchPass = await bcrypt.compare(pass, user?.password)
+
+
+    if (!user) {
       throw new ConflictException()
+    } else if (!matchPass) {
+      throw new UnauthorizedException()
     }
-    const { password, ...result } = emailValidator
 
-    await this.prisma.user.update({ where: { id }, data: { email } })
+
+    await this.prisma.user.update({ where: { email }, data: { email: newEmail } })
 
     return HttpStatus.OK
   }
 
-  async remove(email: string) {
-    const emailValidator = await this.prisma.user.findUnique({ where: { email } })
+  async remove(email: string, pass: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } })
+    const matchPass = await bcrypt.compare(pass, user?.password)
 
-    if (!emailValidator) {
+    if (!user) {
       throw new ConflictException()
+    } else if (!matchPass) {
+      throw new UnauthorizedException()
     }
-    const { password, id, ...result } = emailValidator
+    const { password, id, ...result } = user
 
     await this.prisma.user.delete({ where: { id } })
 
