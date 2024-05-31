@@ -10,13 +10,13 @@ export class UsersService {
     if (await this.prisma.user.findUnique({ where: { email } })) {
       throw new ConflictException()
     }
-    await this.prisma.user.create({
+    const user = await this.prisma.user.create({
       data: {
         email,
         password
       }
     })
-    return HttpStatus.CREATED
+    return user
   }
 
   async findOne(email: string) {

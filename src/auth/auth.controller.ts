@@ -1,14 +1,16 @@
-import { Body, Controller, Delete, HttpCode, HttpStatus, Post, Patch, Param } from '@nestjs/common';
+import { Body, Controller, Delete, HttpCode, HttpStatus, Post, Patch, Request, UseGuards, Param, ParseIntPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from 'src/users/dto/login-user.dto';
 import { SignUpUserDto } from 'src/users/dto/sign-up-user.dto';
 import { DeleteUserDto } from 'src/users/dto/delete-user.dto';
 import { EditeUserDto } from 'src/users/dto/edite-user.dto';
+import { LocalAuthGuard } from './guard/local-auth.guard';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
+  @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async signIn(@Body() signInDto: LoginUserDto) {

@@ -1,30 +1,47 @@
-import { Injectable, HttpCode, UnauthorizedException, HttpStatus, } from '@nestjs/common';
+import { Injectable, HttpCode, UnauthorizedException, HttpStatus } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt'
+import { JwtService } from '@nestjs/jwt';
 
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService
+  ) { }
   saltOrRounds: number = 10;
 
-  async signIn(email: string, pass: string) {
-
+  async validateUser(email: string, pass: string) {
     const user = await this.usersService.findOne(email);
 
     const isMatch = await bcrypt.compare(pass, user?.password)
-    if (!isMatch) {
-      throw new UnauthorizedException();
-    }
 
-    return HttpStatus.OK;
+    if (!isMatch) throw new UnauthorizedException()
+
+    return user;
+  }
+
+  async signIn(email: string, pass: string) {
+    const { password, ...user } = await this.validateUser(email, pass)
+    const payload = user
+    return {
+      status_code: 200,
+      user_id: payload.id,
+      access_token: this.jwtService.sign(payload)
+    };
   }
 
   async singUp(email: string, pass: string) {
 
     const hashPass = await bcrypt.hash(pass, this.saltOrRounds)
-
-    return await this.usersService.create(email, hashPass)
+    const { password, ...user } = await this.usersService.create(email, hashPass)
+    const payload = user
+    return {
+      status_code: 200,
+      user_id: payload.id,
+      access_token: this.jwtService.sign(payload)
+    };
   }
 
   async editUser(email: string, pass: string, newEmail: string) {
