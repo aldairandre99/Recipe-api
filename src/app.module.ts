@@ -7,7 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 
 
 @Module({
-  imports: [ConfigModule.forRoot({envFilePath:"./.development.env"}),PrismaModule, RecipeModule, AuthModule, UsersModule],
+  imports: [ConfigModule.forRoot({envFilePath:"./.env"}),PrismaModule, RecipeModule, AuthModule, UsersModule],
   controllers: [],
   providers: [],
 })
